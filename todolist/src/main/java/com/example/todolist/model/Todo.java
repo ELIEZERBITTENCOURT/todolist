@@ -1,121 +1,89 @@
 package com.example.todolist.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
+@Table(name = "todos")
 public class Todo {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @NotBlank
+  private String nome;
+  @NotBlank
+  private String descricao;
+  private boolean realizado;
+  private int prioridade;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  public Todo() {
 
-    @NotBlank
-    @Size(min = 3, max = 100)
-    @Column(length = 100, nullable = false)
-    private String title;
+  }
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+  public Todo(Long id, @NotBlank String nome, @NotBlank String descricao, boolean realizado, int prioridade) {
+    this.id = id;
+    this.nome = nome;
+    this.descricao = descricao;
+    this.realizado = realizado;
+    this.prioridade = prioridade;
+  }
 
-    @NotNull
-    @FutureOrPresent
-    @Column(nullable = false)
-    @DateTimeFormat(iso = ISO.DATE)
-    private LocalDate deadline;
+  public Todo(String nome, String descricao, boolean realizado, int prioridade) {
+    this.nome = nome;
+    this.descricao = descricao;
+    this.realizado = realizado;
+    this.prioridade = prioridade;
+  }
 
-    @Column(nullable = true)
-    private LocalDate fineshedAt;
+  public Long getId() {
+    return id;
+  }
 
-    public Todo() {
-        this.createdAt = LocalDateTime.now();
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void markHasFinished() {
-        this.fineshedAt = LocalDate.now();
-    }
+  public String getNome() {
+    return nome;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public String getDescricao() {
+    return descricao;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public void setDescricao(String descricao) {
+    this.descricao = descricao;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public boolean isRealizado() {
+    return realizado;
+  }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+  public void setRealizado(boolean realizado) {
+    this.realizado = realizado;
+  }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+  public int getPrioridade() {
+    return prioridade;
+  }
 
-    public LocalDate getDeadline() {
-        return deadline;
-    }
+  public void setPrioridade(int prioridade) {
+    this.prioridade = prioridade;
+  }
 
-    public void setDeadline(LocalDate deadline) {
-        this.deadline = deadline;
-    }
-
-    public LocalDate getFineshedAt() {
-        return fineshedAt;
-    }
-
-    public void setFineshedAt(LocalDate fineshedAt) {
-        this.fineshedAt = fineshedAt;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Todo other = (Todo) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "Todo [id=" + id + ", title=" + title + "]";
-    }
+  @Override
+  public boolean equals(Object obj) {
+    return EqualsBuilder.reflectionEquals(obj, this);
+  }
 
 }

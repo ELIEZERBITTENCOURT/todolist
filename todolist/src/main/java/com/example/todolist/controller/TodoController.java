@@ -2,94 +2,44 @@ package com.example.todolist.controller;
 
 import java.util.Map;
 
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.example.todolist.model.Todo;
 import com.example.todolist.repositories.TodoRepository;
 import jakarta.validation.Valid;
 
-@Controller
+@RestController
+@RequestMapping("/todos")
 public class TodoController {
+    private TodoService todoService;
 
-     private final TodoRepository todoRepository;
-
-    public TodoController(TodoRepository todoRepository) {
-        this.todoRepository = todoRepository;
+    public Todocontroller(Todoservice todoService) {
+        this.todoService = todoService;
     }
 
-    @GetMapping("/")
-    public ModelAndView list() {
-        return new ModelAndView(
-            "todo/list", 
-            Map.of("todos", todoRepository.findAll(Sort.by("deadline")))
-        );
+    @PostMapping("")
+    List<Todo> create(@RequestBody Todo todo){
+        return todoService.create(todo);
     }
 
-    @GetMapping("/create")
-    public ModelAndView create() {
-        return new ModelAndView("todo/form", Map.of("todo", new Todo()));
+    @GetMapping
+    List<Todo> list(){
+        return todoService.list();
+
     }
 
-    @PostMapping("/create")
-    public String create(@Valid Todo todo, BindingResult result) {
-        if (result.hasErrors()) {
-            return "todo/form";
-        }
-        todoRepository.save(todo);
-        return "redirect:/";
+    @PutMapping()
+    List<Todo> update(@RequestBody Todo todo){
+        return todoService.update(todo);
+
     }
 
-    @GetMapping("/edit/{id}")
-    public ModelAndView edit(@PathVariable Long id) {
-        var todo = todoRepository.findById(id);
-        if (todo.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return new ModelAndView("todo/form", Map.of("todo", todo.get()));
-    }
+    @DeleteMapping("{id}")
+    List<Todo> delete(@PathVariable("id") Long id){
+        return todoService.delete(id);
 
-    @PostMapping("/edit/{id}")
-    public String edit(@Valid Todo todo, BindingResult result) {
-        if (result.hasErrors()) {
-            return "todo/form";
-        }
-        todoRepository.save(todo);
-        return "redirect:/";
     }
-
-    @GetMapping("/delete/{id}")
-    public ModelAndView delete(@PathVariable Long id) {
-        var todo = todoRepository.findById(id);
-        if (todo.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return new ModelAndView("todo/delete", Map.of("todo", todo.get()));
-    }
-
-    @PostMapping("/delete/{id}")
-    public String delete(Todo todo) {
-        todoRepository.delete(todo);
-        return "redirect:/";
-    }
-
-    @PostMapping("/finish/{id}")
-    public String finish(@PathVariable Long id) {
-        var optionalTodo = todoRepository.findById(id);
-        if (optionalTodo.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        var todo = optionalTodo.get();
-        todo.markHasFinished();
-        todoRepository.save(todo);
-        return "redirect:/";
-    }
-    
 }
